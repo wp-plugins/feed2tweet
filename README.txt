@@ -1,5 +1,5 @@
 === Feed2tweet ===
-Tags: twitter, post, social
+Tags: twitter, post, social, post to teitter, after post, tweet, message
 Contributors: cfpg
 Requires at least:2.0
 Tested up to: 2.7
