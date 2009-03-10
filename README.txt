@@ -1,5 +1,5 @@
 === Feed2tweet ===
-Tags: twitter, post, social, post to teitter, after post, tweet, message
+Tags: twitter, post, social, post to twitter, after post, tweet, message
 Contributors: cfpg
 Requires at least:2.0
 Tested up to: 2.7
@@ -15,6 +15,10 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 * Easy, set and forget configuration.
 * Custom Tweet Messages: Format them using `%title%` and `%shorturl%`
 * Multiple URL Shortening Services: tinyurl, is.gd, bit.ly
+
+= Related Links =
+*Plugin Homepage:* [Feed2tweet.com](http://feed2tweet.com/)
+*Author Homepage:* [CreamScoop](http://creamscoop.com/)
 
 
 == Installation ==
