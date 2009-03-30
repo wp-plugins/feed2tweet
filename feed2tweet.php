@@ -35,6 +35,8 @@ function f2t_install() {
 	add_option("f2t_tpass", "");
 	add_option("f2t_message", "%title% %shorturl%");
 	add_option("f2t_urlshort", "tinyurl.com");
+	add_option("f2t_tweetposts", "yes");
+	add_option("f2t_tweetpages", "yes");
 	
 }
 
@@ -45,11 +47,22 @@ function f2t_update() {
 	if ( isset($_POST['f2t_update']) && @$_POST['f2t_update'] == "y" ) {
 		
 		if ( $_POST['f2t_tuser'] != "" || $_POST['f2t_tpass'] != "" ) {
+		  
+		  // What to Tweet? Checkboxes
+		  if($_POST['f2t_tweetposts'] == '') {
+		    $_POST['f2t_tweetposts'] = 'no';
+		  }
+		  if( $_POST['f2t_tweetpages'] == '' ) {
+		    $_POST['f2t_tweetpages'] = 'no';
+		  }
+		  
 			update_option("f2t_tuser", $_POST['f2t_tuser']);
 			update_option("f2t_tpass", $_POST['f2t_tpass']);
 			update_option("f2t_message", $_POST['f2t_message']);
 			update_option("f2t_urlshort", $_POST['f2t_urlshort']);
-			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php&updated=true' );
+			update_option("f2t_tweetposts", $_POST['f2t_tweetposts']);
+			update_option("f2t_tweetpages", $_POST['f2t_tweetpages']);
+			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php&updated=true');
 		} else {
 			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php');
 		}
@@ -61,9 +74,26 @@ function f2t_update() {
 // After a Post is published, post it to twitter
 add_action('transition_post_status', 'f2t_post', 1, 3);
 function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
+  
+  // Check post_type and if it's supposed to be Tweeted
+  $tweet_allowed = false;
+  switch ( $post->post_type ) {
+    case 'post':
+      if ( get_option("f2t_tweetposts") == 'yes' ) {
+        $tweet_allowed = true;
+      }
+    end;
+    case 'page':
+      if ( get_option("f2t_tweetpages") == 'yes' ) {
+        $tweet_allowed = true;
+      }
+    end;
+  }
 	
 	if ( $new_status == "publish" ) { // If post was published
 	if ( get_option('f2t_tuser') != '' && get_option('f2t_tpass') != '' ) { // If tuser AND tpass aren't empty
+	if ( $tweet_allowed ) {
+	
 		
 		$post_permalink = get_permalink($post->ID);
 		//$post_permalink = $post->guid;
@@ -158,7 +188,8 @@ function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
 		);
 		$twitter_context = stream_context_create($twitter_opts);
 		$twitter = @file_get_contents($twitter_url, false, $twitter_context);
-		
+	
+	} // Close if $tweet_allowed
 	} // Close if tuser AND tpass aren't empty
 	} // Close if post wasn't published
 	
@@ -183,6 +214,24 @@ function feed2tweet_options() {
       $urlshort_inputs .= '<label for="url'.$i.'"><input type="radio" name="f2t_urlshort" id="url'.$i.'" value="'.$url.'" /> '.$url.'</label><br />';
     }
     $i++;
+  }
+  
+  // What to Tweet? Checkboxes
+  if ( get_option("f2t_tweetposts") == 'yes' ) {
+    $posts_checked = ' checked="checked" ';
+  } elseif ( get_option("f2t_tweetposts") == '' ) {
+    update_option("f2t_tweetposts", "yes");
+    $posts_checked = ' checked="checked" ';
+  } else {
+    $posts_checked = '';
+  }
+  if ( get_option("f2t_tweetpages") == 'yes' ) {
+    $pages_checked = ' checked="checked" ';
+  } elseif ( get_option("f2t_tweetpages") == '' ) {
+    update_option("f2t_tweetpages", "yes");
+    $pages_checked = ' checked="checked" ';
+  } else {
+    $pages_checked = '';
   }
   
 	wp_nonce_field('update-options');
@@ -218,6 +267,16 @@ function feed2tweet_options() {
 					</tr>
 					<tr valign="top">
 						<th scope="row">
+							<label for="f2t_tweetonly">What to Tweet?</label>
+						</th>
+						<td>
+							<label for="f2t_tweetposts"><input type="checkbox" name="f2t_tweetposts" id="f2t_tweetposts" value="yes"'.$posts_checked.' /> Posts</label>
+					    &nbsp;&nbsp;
+							<label for="f2t_tweetpages"><input type="checkbox" name="f2t_tweetpages" id="f2t_tweetpages" value="yes"'.$pages_checked.' /> Pages</label>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
 							<label for="f2t_urlshort">URL Shortening Sevice:</label>
 						</th>
 						<td>
@@ -243,6 +302,8 @@ function f2t_uninstall() {
 	delete_option("f2t_tpass");
 	delete_option("f2t_message");
 	delete_option("f2t_urlshort");
+	delete_option("f2t_tweetposts");
+	delete_option("f2t_tweetpages");
 	
 }
 
