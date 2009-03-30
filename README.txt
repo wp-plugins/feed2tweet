@@ -9,12 +9,13 @@ Feed2tweet plugins allows you to publish your new posts to your twitter account.
 
 == Description ==
 
-The Feed2tweet plugin is a very simple, non-obstrusive way of automatically tweeting your new posts on your WordPres blog.
+The Feed2tweet plugin is a very simple, non-obstrusive way of automatically tweeting your new published posts and pages on your WordPres blog.
 
 = Features =
 * Easy, set and forget configuration.
 * Custom Tweet Messages: Format them using `%title%` and `%shorturl%`
 * Multiple URL Shortening Services: tinyurl, is.gd, bit.ly
+* What to Tweet? Ability to tweet Posts, Pages or Both when Published
 
 = Related Links =
 *Plugin Homepage:* [Feed2tweet.com](http://feed2tweet.com/)
@@ -30,8 +31,9 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 
 == Screenshots ==
 
-1. Feed2tweet configuration page
+1. Feed2tweet configuration page under WP 2.7
+2. Feed2tweet under WP 2.6
 
 == What's Changed? ==
 
-Plugin is just released.
+Added ability to select what to tweet(Posts, Pages or Both).
