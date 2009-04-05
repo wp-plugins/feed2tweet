@@ -21,7 +21,7 @@
 Plugin Name: Feed2tweet
 Plugin URI: http://feed2tweet.com/
 Description: Tweets your published posts.
-Version: 0.8
+Version: 0.8.2
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
 */
