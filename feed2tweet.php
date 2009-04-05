@@ -1,6 +1,6 @@
 <?php
 
-/*  Copyright 2009  Carlos Pena  (email : contact@creamscoop.com)
+/*  Copyright 2009  Carlos Pena  (email : carlos@creamscoop.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,10 +21,9 @@
 Plugin Name: Feed2tweet
 Plugin URI: http://feed2tweet.com/
 Description: Tweets your published posts.
-Version: 0.2
+Version: 0.8.1
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
-Compatible: WordPress 2.0+
 */
 
 // When activiting, create options with no value
@@ -37,6 +36,15 @@ function f2t_install() {
 	add_option("f2t_urlshort", "tinyurl.com");
 	add_option("f2t_tweetposts", "yes");
 	add_option("f2t_tweetpages", "yes");
+	// Advanced Options
+	add_option("f2t_trimuser", ""); // tr.im username
+	add_option("f2t_trimpass", ""); // tr.im password
+	add_option("f2t_bitlylogin", ""); // bit.ly login/username
+	add_option("f2t_bitlykey", ""); // bit.ly API Key
+	add_option("f2t_gaactive", "no"); // Is GA Tracking active?
+	add_option("f2t_gasource", "Twitter"); // GA Campaign Source
+	add_option("f2t_gamedium", "link"); // GA Campaign Medium
+	add_option("f2t_ganame", "Feed2tweet Auto-Tweet"); // GA Campaign Name
 	
 }
 
@@ -56,12 +64,26 @@ function f2t_update() {
 		    $_POST['f2t_tweetpages'] = 'no';
 		  }
 		  
+		  // GA Checkbox
+		  if( $_POST['f2t_gaactive'] == '' ) {
+		    $_POST['f2t_gaactive'] = 'no';
+		  }
+		  
 			update_option("f2t_tuser", $_POST['f2t_tuser']);
 			update_option("f2t_tpass", $_POST['f2t_tpass']);
 			update_option("f2t_message", $_POST['f2t_message']);
 			update_option("f2t_urlshort", $_POST['f2t_urlshort']);
 			update_option("f2t_tweetposts", $_POST['f2t_tweetposts']);
 			update_option("f2t_tweetpages", $_POST['f2t_tweetpages']);
+			// Advanced Options
+    	update_option("f2t_trimuser", $_POST['f2t_trimuser']);
+    	update_option("f2t_trimpass", $_POST['f2t_trimpass']);
+    	update_option("f2t_bitlylogin", $_POST['f2t_bitlylogin']);
+    	update_option("f2t_bitlykey", $_POST['f2t_bitlykey']);
+    	update_option("f2t_gaactive", $_POST['f2t_gaactive']);
+    	update_option("f2t_gasource", $_POST['f2t_gasource']);
+    	update_option("f2t_gamedium", $_POST['f2t_gamedium']);
+    	update_option("f2t_ganame", $_POST['f2t_ganame']);
 			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php&updated=true');
 		} else {
 			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php');
@@ -98,6 +120,20 @@ function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
 		$post_permalink = get_permalink($post->ID);
 		//$post_permalink = $post->guid;
 		$post_title = $post->post_title;
+		
+		// GA Tracking activated?
+		if ( get_option("f2t_gaactive") == 'yes' ) {
+		  if ( get_option('permalink_structure') == '' ) { // Are they using custom permalinks or default?
+		    $ga_sep = '&';
+		  } else {
+		    $ga_sep = '?';
+		  }
+		  $ga_str = 'utm_source='.urlencode(get_option('f2t_gasource'));
+		  $ga_str .= '&utm_medium='.urlencode(get_option('f2t_gamedium'));
+		  $ga_str .= '&utm_campaign='.urlencode(get_option('f2t_ganame')).'';
+		  
+		  $post_permalink = $post_permalink.$ga_sep.$ga_str;
+		}
 
 		// URL Shortening
 		$urlshort = get_option("f2t_urlshort");
@@ -121,12 +157,29 @@ function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
     		if ( strpos($shorturl, 'Error:') == false ) { $urlerror = true; } // If is.gd returned an error
 		    break;
 		  case 'bit.ly':
+		    $api_key = 'R_f57af1bd0f2bc6107476debaa71f35a1'; // Default API Key
+		    $login = 'cfpg'; // Default login
+		    $history = '';
+		    
+		    if ( get_option("f2t_bitlylogin") != '' && get_option('f2t_bitlykey') != '' ) {
+		      $api_key = get_option("f2t_bitlykey");
+		      $login = get_option("f2t_bitlylogin");
+		      $history = '&history=1';
+		    }
+		    
 		    $post_permalink = urlencode($post_permalink);
-        $shorturl = @file_get_contents("http://api.bit.ly/shorten?version=2.0.1&login=cfpg&apiKey=R_f57af1bd0f2bc6107476debaa71f35a1&longUrl=$post_permalink");
+        $shorturl = @file_get_contents("http://api.bit.ly/shorten?version=2.0.1&login=$login&apiKey=$api_key&longUrl=$post_permalink".$history);
         if ( strpos($shorturl, '"statusCode": "OK"') == false ) { $error = true; } else {
           preg_match('/"shortUrl": "(.*)"/', $shorturl, $match);
           $shorturl = $match[1];
         }
+		    break;
+		  case 'tr.im':
+		    if ( get_option("f2t_trimuser") != '' && get_option('f2t_trimpass') != '' ) {
+		      $append = '&username='.get_option("f2t_trimuser").'&password='.get_option('f2t_trimpass');
+		    }
+		    $shorturl = @file_get_contents("http://api.tr.im/api/trim_simple?url=".$post_permalink.$append);
+		    if ( $shorturl == '' ) { $error = true; }
 		    break;
 		  default:
 		    // TinURL the permalink to include in Twitter message
@@ -202,7 +255,7 @@ function feed2tweet_menu() {
 }
 function feed2tweet_options() {
   
-  $urlshort = array('tinyurl.com', 'is.gd', 'bit.ly');
+  $urlshort = array('tinyurl.com', 'is.gd', 'bit.ly', 'tr.im');
   $urlshort_inputs = '';
   $f2t_urlshort = get_option('f2t_urlshort');
   $i = 1;
@@ -234,7 +287,36 @@ function feed2tweet_options() {
     $pages_checked = '';
   }
   
+  // Google Analytics checkbox
+  if ( get_option("f2t_gaactive") == 'yes' ) {
+    $f2t_gaactive_checked = ' checked="checked" ';
+  } elseif ( get_option("f2t_gaactive") == '' ) {
+    update_option("f2t_gaactive", "no");
+    $f2t_gaactive_checked = '';
+  } else {
+    $f2t_gaactive_checked = '';
+  }
+  
 	wp_nonce_field('update-options');
+	echo '
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+	 $(document).ready(function() {
+       $("#f2t_advtable").hide();
+       $("#f2t_advopen").click(function() {
+         if ( $("#f2t_advopen").html() == "Open" ) {
+          $("#f2t_advtable").show("500");
+          $("#f2t_advopen").html("Close");
+         } else {
+           $("#f2t_advtable").hide("500");
+           $("#f2t_advopen").html("Open");
+         }
+         return false;
+       })
+   });
+	</script>
+	';
+	
   	echo '
 		<div class="wrap">
 			<h2>Feed2tweet</h2>
@@ -245,7 +327,7 @@ function feed2tweet_options() {
 							<label for="f2t_tuser">Twitter Username</label>
 						</th>
 						<td>
-							<input type="text" name="f2t_tuser" value="'.get_option('f2t_tuser').'" size="40" />
+							<input type="text" name="f2t_tuser" id="f2t_tuser" value="'.get_option('f2t_tuser').'" size="40" />
 						</td>
 					</tr>
 					<tr valign="top">
@@ -253,16 +335,16 @@ function feed2tweet_options() {
 							<label for="f2t_tpass">Twitter Password</label>
 						</th>
 						<td>
-							<input type="text" name="f2t_tpass" value="'.get_option('f2t_tpass').'" size="40" />
+							<input type="password" name="f2t_tpass" id="f2t_tpass" value="'.get_option('f2t_tpass').'" size="40" />
 						</td>
 					</tr>
 					<tr valign="top">
 						<th scope="row">
-							<label for="f2t_tpass">Format your Message</label>
+							<label for="f2t_message">Format your Message</label>
 							<p>Available variables are <i>%title%</i> and <i>%shorturl%</i>.</p>
 						</th>
 						<td>
-							<input type="text" name="f2t_message" value="'.get_option('f2t_message').'" size="40" />
+							<input type="text" name="f2t_message" id="f2t_message" value="'.get_option('f2t_message').'" size="40" />
 						</td>
 					</tr>
 					<tr valign="top">
@@ -284,6 +366,97 @@ function feed2tweet_options() {
 						</td>
 					</tr>
 				</table>
+				<h3>Advanced Options <a href="#" id="f2t_advopen" style="font-size: 80%;">Open</a></h3>
+				<div id="f2t_advtable">
+				  <table class="form-table">
+  				  <tr valign="top">
+  				    <th>tr.im Account</th>
+  				    <td>
+  				      Use your tr.im account to keep track of your links and statistics. <a href="http://tr.im/signup" target="_blank">More info & Signup</a>.
+  				    </td>
+  				  </tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_trimuser">tr.im Username</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_trimuser" id="f2t_trimuser" value="'.get_option('f2t_trimuser').'" size="40" />
+  						</td>
+  					</tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_trimpass">tr.im Password</label>
+  						</th>
+  						<td>
+  							<input type="password" name="f2t_trimpass" id="f2t_trimpass" value="'.get_option('f2t_trimpass').'" size="40" />
+  						</td>
+  					</tr>
+  				</table>
+  				
+  				<p>&nbsp;</p>
+  				
+  				<table class="form-table">
+  					<tr valign="top">
+  				    <th>bit.ly Account</th>
+  				    <td>
+  				      Use your bit.ly account to keep track of your links and statistics. You need to <a href="http://bit.ly/" target="_blank">register for an account</a> and then go to <a href="http://bit.ly/account/" target="_blank">bit.ly Account Settings</a> to get an API Key, this is different from your password.
+  				    </td>
+  				  </tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_bitlylogin">bit.ly Username</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_bitlylogin" id="f2t_bitlylogin" value="'.get_option('f2t_bitlylogin').'" size="40" />
+  						</td>
+  					</tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_bitlykey">bit.ly API Key</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_bitlykey" id="f2t_bitlykey" value="'.get_option('f2t_bitlykey').'" size="40" />
+  						</td>
+  					</tr>
+  				</table>
+  				
+  				<p>&nbsp;</p>
+  				
+  				<table class="form-table">
+  					<tr valign="top">
+  				    <th>
+  				      <label for="f2t_gaactive">Track links using Google Analytics?</label>
+  				    </th>
+  				    <td>
+  				      <label for="f2t_gaactive"><input type="checkbox" name="f2t_gaactive" id="f2t_gaactive" value="yes"'.$f2t_gaactive_checked.' /> Yes</label> - You can use Google Analytics to track visitors coming from your twitter posts. This will append a couple of URL variables to your permalinks before being shortened. <a href="http://www.google.com/support/googleanalytics/bin/answer.py?hl=en&answer=55518" target="_blank">More info</a>.
+  				    </td>
+  				  </tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_gasource">Campaign Source</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_gasource" id="f2t_gasource" value="'.get_option('f2t_gasource').'" size="40" />
+  						</td>
+  					</tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_gamedium">Campaign Medium</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_gamedium" id="f2t_gamedium" value="'.get_option('f2t_gamedium').'" size="40" />
+  						</td>
+  					</tr>
+  					<tr valign="top">
+  						<th scope="row">
+  							<label for="f2t_ganame">Campaign Name</label>
+  						</th>
+  						<td>
+  							<input type="text" name="f2t_ganame" id="f2t_ganame" value="'.get_option('f2t_ganame').'" size="40" />
+  						</td>
+  					</tr>
+  				</table>
+				</div>
 				<p class="submit">
 					<input type="hidden" name="f2t_update" value="y" />
 					<input type="submit" name="Submit" value="Save Changes" />
@@ -304,6 +477,15 @@ function f2t_uninstall() {
 	delete_option("f2t_urlshort");
 	delete_option("f2t_tweetposts");
 	delete_option("f2t_tweetpages");
+	delete_option("f2t_trimuser");
+	delete_option("f2t_trimpass");
+	delete_option("f2t_bitlylogin");
+	delete_option("f2t_bitlykey");
+	delete_option("f2t_gaactive");
+	delete_option("f2t_gaactive");
+	delete_option("f2t_gasource");
+	delete_option("f2t_gamedium");
+	delete_option("f2t_ganame");
 	
 }
 

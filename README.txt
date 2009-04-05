@@ -1,9 +1,9 @@
 === Feed2tweet ===
-Tags: twitter, post, social, post to twitter, after post, tweet, message
+Tags: twitter, post, social, post to twitter, after post, tweet, message, analytics, tr.im, bit.ly, url shortener
 Contributors: cfpg
-Requires at least:2.0
+Requires at least: 2.0
 Tested up to: 2.7
-Stable tag: trunk
+Stable tag: 0.8
 
 Feed2tweet plugins allows you to publish your new posts to your twitter account.
 
@@ -16,10 +16,13 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 * Custom Tweet Messages: Format them using `%title%` and `%shorturl%`
 * Multiple URL Shortening Services: tinyurl, is.gd, bit.ly
 * What to Tweet? Ability to tweet Posts, Pages or Both when Published
+* Use your bit.ly and tr.im account to keep track of your links
+* Use Google Analytics to track incoming visits from these links
 
 = Related Links =
-*Plugin Homepage:* [Feed2tweet.com](http://feed2tweet.com/)
-*Author Homepage:* [CreamScoop](http://creamscoop.com/)
+* Plugin Homepage: [Feed2tweet.com](http://feed2tweet.com/)
+* Author Homepage: [CreamScoop](http://creamscoop.com/)
+* Twitter: [@feed2tweet](http://twitter.com/feed2tweet)
 
 
 == Installation ==
@@ -36,4 +39,5 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 
 == What's Changed? ==
 
-Added ability to select what to tweet(Posts, Pages or Both).
+* 0.8 - Added Advanced Options: You can use your bit.ly and tr.im account to keep track of your links and stats. You can also add Google Analytics code to the end of your urls to track visitors using Analytics.
+* 0.4 - Added ability to select what to tweet(Posts, Pages or Both).
