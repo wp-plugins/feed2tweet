@@ -17,7 +17,7 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 * Multiple URL Shortening Services: tinyurl, is.gd, bit.ly
 * What to Tweet? Ability to tweet Posts, Pages or Both when Published
 * Use your bit.ly and tr.im account to keep track of your links
-* Use Google Analytics to track incoming visits from this links
+* Use Google Analytics to track incoming visits from these links
 
 = Related Links =
 * Plugin Homepage: [Feed2tweet.com](http://feed2tweet.com/)
