@@ -1,7 +1,7 @@
 === Feed2tweet ===
 Tags: twitter, post, social, post to twitter, after post, tweet, message, analytics, tr.im, bit.ly, url shortener
 Contributors: cfpg
-Requires at least:2.0
+Requires at least: 2.0
 Tested up to: 2.7
 Stable tag: 0.8
 

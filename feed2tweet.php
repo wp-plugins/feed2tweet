@@ -1,6 +1,6 @@
 <?php
 
-/*  Copyright 2009  Carlos Pena  (email : contact@creamscoop.com)
+/*  Copyright 2009  Carlos Pena  (email : carlos@creamscoop.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ Description: Tweets your published posts.
 Version: 0.8
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
-Compatible: WordPress 2.0+
 */
 
 // When activiting, create options with no value
