@@ -3,7 +3,7 @@ Tags: twitter, post, social, post to twitter, after post, tweet, message, analyt
 Contributors: cfpg
 Requires at least: 2.0
 Tested up to: 2.7
-Stable tag: 0.8.2
+Stable tag: 0.8.4
 
 Feed2tweet plugins allows you to publish your new posts to your twitter account.
 
