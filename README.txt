@@ -14,7 +14,7 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 = Features =
 * Easy, set and forget configuration.
 * Custom Tweet Messages: Format them using `%title%` and `%shorturl%`
-* Multiple URL Shortening Services: tinyurl, is.gd, bit.ly
+* Multiple URL Shortening Services: tinyurl, is.gd, bit.ly, tr.im
 * What to Tweet? Ability to tweet Posts, Pages or Both when Published
 * Use your bit.ly and tr.im account to keep track of your links
 * Use Google Analytics to track incoming visits from these links
@@ -31,6 +31,13 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 2. Put `feed2tweet.php` file into your `wp-content/plugins/` directory.
 3. Go to the `Plugins` page in your WordPress Administration area and click 'Activate' for Feed2tweet.
 4. Go to `Wp Admin -> Settings -> Feed2tweet` to enter your twitter account info and modify other settings.
+
+= Upgrade =
+1. Deactivate Plugin under Plugin Manager
+2. Download newest version from WP.org
+3. Upload feed2tweet.php to `wp-content/plugins/`.
+4. Go to the `Plugins` page in your WordPress Administration area and click 'Activate' for Feed2tweet.
+5. Go to `Wp Admin -> Settings -> Feed2tweet` to enter your twitter account info and modify other settings.
 
 == Screenshots ==
 
