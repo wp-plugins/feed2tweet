@@ -21,7 +21,7 @@
 Plugin Name: Feed2tweet
 Plugin URI: http://feed2tweet.com/
 Description: Tweets your published posts.
-Version: 0.8.4
+Version: 1.0
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
 */
@@ -181,6 +181,25 @@ function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
 		    $shorturl = @file_get_contents("http://api.tr.im/api/trim_simple?url=".$post_permalink.$append);
 		    if ( $shorturl == '' ) { $error = true; }
 		    break;
+		case 'digg.com':
+			
+			$ctx = array(
+	  		  'http'=>array(
+	  		    'method'=>"GET",
+'header'=>"GET /url/short/create?url=".urlencode($post_permalink)."&appkey=http%3A%2F%2Ffeed2tweet.com%2F HTTP/1.1\r\n
+Accept: text/xml\r\n
+Content-Type: text/xml;charset=UTF-8\r\n
+User-Agent:Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/528.16 (KHTML, like Gecko) Version/4.0 Safari/528.16\r\n"
+	  		  )
+	  		);
+			$context = stream_context_create($ctx);
+			ini_set('user_agent', 'My-Application/2.5');
+			$shorturl = @file_get_contents("http://services.digg.com/url/short/create?url=".urlencode($post_permalink)."&appkey=http%3A%2F%2Ffeed2tweet.com%2F");
+			$shorturl = preg_match('/short_url="(.*)" view_count="/', $shorturl, $match);
+			$shorturl = $match[1];
+			if ( $shorturl == '' ) { $error = true; }
+			
+			break;
 		  default:
 		    // TinURL the permalink to include in Twitter message
     		$tinyurl_opts = array(
@@ -255,7 +274,7 @@ function feed2tweet_menu() {
 }
 function feed2tweet_options() {
   
-  $urlshort = array('tinyurl.com', 'is.gd', 'bit.ly', 'tr.im');
+  $urlshort = array('tinyurl.com', 'is.gd', 'bit.ly', 'tr.im', 'digg.com');
   $urlshort_inputs = '';
   $f2t_urlshort = get_option('f2t_urlshort');
   $i = 1;
