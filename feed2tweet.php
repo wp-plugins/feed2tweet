@@ -21,7 +21,7 @@
 Plugin Name: Feed2tweet
 Plugin URI: http://feed2tweet.com/
 Description: Tweets your published posts.
-Version: 1.0
+Version: 1.0.1
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
 */
@@ -84,9 +84,10 @@ function f2t_update() {
     	update_option("f2t_gasource", $_POST['f2t_gasource']);
     	update_option("f2t_gamedium", $_POST['f2t_gamedium']);
     	update_option("f2t_ganame", $_POST['f2t_ganame']);
-			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php&updated=true');
+		
+			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet/feed2tweet.php&updated=true');
 		} else {
-			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet.php');
+			header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=feed2tweet/feed2tweet.php');
 		}
 		
 	}

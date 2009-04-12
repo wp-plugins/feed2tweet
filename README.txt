@@ -3,7 +3,7 @@ Tags: twitter, post, social, post to twitter, after post, tweet, message, analyt
 Contributors: cfpg
 Requires at least: 2.0
 Tested up to: 2.7
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 Feed2tweet plugins allows you to publish your new posts to your twitter account.
 
@@ -28,14 +28,14 @@ The Feed2tweet plugin is a very simple, non-obstrusive way of automatically twee
 == Installation ==
 
 1. Download the plugin archive and expand it (you've likely already done this).
-2. Put `feed2tweet.php` file into your `wp-content/plugins/` directory.
+2. Upload `feed2tweet` directory into your `wp-content/plugins/` directory.
 3. Go to the `Plugins` page in your WordPress Administration area and click 'Activate' for Feed2tweet.
 4. Go to `Wp Admin -> Settings -> Feed2tweet` to enter your twitter account info and modify other settings.
 
 = Upgrade =
 1. Deactivate Plugin under Plugin Manager
 2. Download newest version from WP.org
-3. Upload feed2tweet.php to `wp-content/plugins/`.
+3. Upload `feed2tweet` directory to `wp-content/plugins/`.
 4. Go to the `Plugins` page in your WordPress Administration area and click 'Activate' for Feed2tweet.
 5. Go to `Wp Admin -> Settings -> Feed2tweet` to enter your twitter account info and modify other settings.
 
