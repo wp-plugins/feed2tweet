@@ -21,7 +21,7 @@
 Plugin Name: Feed2tweet
 Plugin URI: http://feed2tweet.com/
 Description: Tweets your published posts.
-Version: 1.0.1
+Version: 1.0.2
 Author: Carlos Pena
 Author URI: http://creamscoop.com/about/
 */
@@ -113,7 +113,7 @@ function f2t_post($new_status = NULL, $old_status = NULL, $post = NULL) {
     end;
   }
 	
-	if ( $new_status == "publish" ) { // If post was published
+	if ( $new_status == "publish" && $old_status != "publish" ) { // If post was published
 	if ( get_option('f2t_tuser') != '' && get_option('f2t_tpass') != '' ) { // If tuser AND tpass aren't empty
 	if ( $tweet_allowed ) {
 	
