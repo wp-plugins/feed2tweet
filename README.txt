@@ -2,8 +2,8 @@
 Tags: twitter, post, social, post to twitter, after post, tweet, message, analytics, tr.im, bit.ly, url shortener, auto tweet
 Contributors: cfpg
 Requires at least: 2.0
-Tested up to: 2.8
-Stable tag: 1.0.2
+Tested up to: 2.8.3
+Stable tag: 1.0.3
 
 Feed2tweet plugins allows you to publish your new posts to your twitter account.
 
